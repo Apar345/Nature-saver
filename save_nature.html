@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Save Nature - Interactive Experience Extended</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&amp;display=swap');
+
+  :root {
+    --primary-color: #2e7d32;
+    --secondary-color: #a5d6a7;
+    --accent-color: #f9a825;
+    --background-color: #e8f5e9;
+    --text-color: #1b5e20;
+    --shadow-color: rgba(46, 125, 50, 0.3);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+
+  header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 10px var(--shadow-color);
+  }
+
+  header h1 {
+    font-weight: 700;
+    font-size: 2.75rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
+    margin: 0;
+  }
+
+  header p {
+    margin-top: 0.5rem;
+    font-style: italic;
+    font-size: 1.3rem;
+  }
+
+  main {
+    max-width: 900px;
+    margin: 3rem auto;
+    padding: 0 1rem;
+  }
+
+  section {
+    margin-bottom: 3.5rem;
+  }
+
+  h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    border-bottom: 4px solid var(--accent-color);
+    display: inline-block;
+    padding-bottom: 0.2rem;
+  }
+
+  .info-cards {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .card {
+    background: white;
+    flex: 1 1 250px;
+    box-shadow: 0 6px 12px var(--shadow-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 20px var(--shadow-color);
+  }
+
+  .card h3 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    color: var(--primary-color);
+    font-weight: 700;
+  }
+
+  .card p {
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  /* Buttons container */
+  .buttons-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  button, .btn {
+    background-color: var(--accent-color);
+    border: none;
+    color: white;
+    font-weight: 700;
+    padding: 0.75rem 1.75rem;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 6px 8px rgba(249, 168, 37, 0.6);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+
+  button:hover, .btn:hover {
+    background-color: #f57f17;
+    box-shadow: 0 8px 14px rgba(245, 127, 23, 0.85);
+  }
+
+  button:focus, .btn:focus {
+    outline: 3px solid #ffd54f;
+    outline-offset: 2px;
+  }
+
+  /* Hidden toggle sections */
+  .toggle-section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 18px var(--shadow-color);
+    max-width: 700px;
+    margin: 1rem auto 3rem auto;
+    padding: 1.5rem 2rem;
+    line-height: 1.5;
+    color: var(--text-color);
+    font-size: 1.1rem;
+    display: none;
+  }
+
+  .toggle-section.active {
+    display: block;
+    animation: fadeInUp 0.7s ease forwards;
+  }
+
+  /* Tips list */
+  #natureTips {
+    background: white;
+    max-width: 700px;
+    margin: 0 auto 3rem auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 18px var(--shadow-color);
+    padding: 1.5rem 2rem;
+    font-size: 1.1rem;
+    color: var(--text-color);
+  }
+
+  #natureTips ul {
+    margin-left: 1.5rem;
+  }
+
+  /* Modal styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(27, 94, 32, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    max-width: 400px;
+    padding: 2rem;
+    text-align: center;
+    color: var(--primary-color);
+    position: relative;
+  }
+
+  .modal h3 {
+    margin-top: 0;
+  }
+
+  .modal p {
+    font-size: 1.1rem;
+    margin: 1rem 0 2rem;
+  }
+
+  .modal button.close-btn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    font-weight: 700;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 6px 9px rgba(46, 125, 50, 0.8);
+  }
+
+  .modal button.close-btn:hover {
+    background-color: #27632a;
+  }
+
+  @media (max-width: 600px) {
+    .info-cards {
+      flex-direction: column;
+      gap: 2rem;
+    }
+    .buttons-row {
+      flex-direction: column;
+    }
+    button, .btn {
+      width: 100%;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Quiz styles */
+  #natureQuiz {
+    background: white;
+    max-width: 700px;
+    margin: 0 auto 3rem auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 18px var(--shadow-color);
+    padding: 1.5rem 2rem;
+    font-size: 1.1rem;
+    color: var(--text-color);
+  }
+
+  #natureQuiz h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  .quiz-question {
+    margin-bottom: 1.2rem;
+  }
+
+  .quiz-options button {
+    background-color: var(--secondary-color);
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    margin-right: 0.6rem;
+    margin-top: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+
+  .quiz-options button:hover {
+    background-color: var(--accent-color);
+    color: white;
+  }
+
+  .quiz-options button.correct {
+    background-color: #4caf50;
+    color: white;
+    cursor: default;
+  }
+
+  .quiz-options button.incorrect {
+    background-color: #f44336;
+    color: white;
+    cursor: default;
+  }
+
+  .quiz-feedback {
+    font-weight: 700;
+    margin-top: 0.5rem;
+  }
+
+  /* Gallery styles */
+  #gallery {
+    background: white;
+    max-width: 720px;
+    margin: 0 auto 3rem auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 18px var(--shadow-color);
+    padding: 1.5rem 2rem;
+    text-align: center;
+  }
+
+  #gallery h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  #gallery-img {
+    width: 100%;
+    max-height: 350px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 6px 14px var(--shadow-color);
+  }
+
+  .gallery-controls {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .gallery-controls button {
+    background-color: var(--primary-color);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 700;
+  }
+
+  .gallery-controls button:hover {
+    background-color: #27632a;
+  }
+
+  /* Get Involved section */
+  #getInvolved {
+    background: white;
+    max-width: 700px;
+    margin: 0 auto 4rem auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 18px var(--shadow-color);
+    padding: 1.5rem 2rem;
+  }
+
+  #getInvolved h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  #getInvolved ul {
+    margin-left: 1.5rem;
+    font-size: 1.1rem;
+  }
+
+  #getInvolved li {
+    margin-bottom: 0.8rem;
+  }
+
+  #getInvolved a {
+    color: var(--primary-color);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  #getInvolved a:hover {
+    text-decoration: underline;
+  }
+
+</style>
+</head>
+<body>
+<header>
+  <h1>Save Nature</h1>
+  <p>Act today. Protect tomorrow.</p>
+</header>
+<main>
+  <section aria-label="Introduction">
+    <h2 class="animate">Why Save Nature?</h2>
+    <p class="animate delay-1" style="max-width: 600px; margin-bottom: 2rem;">
+      Nature is the foundation of our existence. Preserving natural habitats, reducing pollution, and embracing sustainable habits are crucial to ensure a healthy planet for future generations.
+    </p>
+    <div class="buttons-row">
+      <button id="learnMoreBtn" aria-controls="learnMoreContent" aria-expanded="false" aria-label="Learn more about saving nature">Learn More</button>
+      <button id="tipsBtn" aria-controls="natureTips" aria-expanded="false" aria-label="Show nature saving tips">Show Tips</button>
+      <button id="donateBtn" aria-label="Donate to save nature causes">Donate</button>
+    </div>
+    <div class="info-cards" id="infoCards" aria-live="polite" aria-atomic="true">
+      <article class="card animate delay-2" aria-label="Biodiversity importance">
+        <h3>Protect Biodiversity</h3>
+        <p>Plants and animals maintain ecosystem balance. Every species matters for Earth's health.</p>
+      </article>
+      <article class="card animate delay-2" aria-label="Clean air and water">
+        <h3>Clean Air &amp; Water</h3>
+        <p>Forests and wetlands filter air and water, which are essential for all life forms.</p>
+      </article>
+      <article class="card animate delay-2" aria-label="Climate regulation">
+        <h3>Regulate Climate</h3>
+        <p>Natural ecosystems help stabilize temperatures, controlling climate change effects.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="learnMoreContent" class="toggle-section" aria-hidden="true" tabindex="0">
+    <h2>More About Saving Nature</h2>
+    <p>Saving nature means preserving the world's diverse habitats and species from harm and destruction. This includes protecting forests, oceans, rivers, and wildlife from pollution, overharvesting, and climate change effects. By reducing waste, conserving energy, planting trees, and supporting sustainable practices, everyone can contribute to healing the planet.</p>
+    <p>Communities around the world are taking action to restore ecosystems, enhance biodiversity, and promote environmental awareness. Your involvement, no matter how small, amplifies this global effort.</p>
+  </section>
+
+  <section id="natureTips" class="toggle-section" aria-hidden="true" tabindex="0">
+    <h2>Nature Saving Tips</h2>
+    <ul>
+      <!-- Tips dynamically inserted here -->
+    </ul>
+  </section>
+
+  <!-- New Section: Nature Quiz -->
+  <section id="natureQuiz" aria-label="Nature Challenge Quiz">
+    <h2>Take the Nature Challenge Quiz</h2>
+    <div id="quizContainer">
+      <!-- Quiz question will be loaded here by JS -->
+    </div>
+  </section>
+
+  <!-- New Section: Nature Photo Gallery -->
+  <section id="gallery" aria-label="Nature Photo Gallery">
+    <h2>Explore the Beauty of Nature</h2>
+    <img src="" alt="Nature image" id="gallery-img" />
+    <div class="gallery-controls">
+      <button id="prevImgBtn" aria-label="Previous image">Previous</button>
+      <button id="nextImgBtn" aria-label="Next image">Next</button>
+    </div>
+  </section>
+
+  <!-- New Section: Get Involved -->
+  <section id="getInvolved" aria-label="Get Involved">
+    <h2>Get Involved</h2>
+    <p>Join hands with organizations and take action today to protect our planet:</p>
+    <ul>
+      <li><a href="https://www.nature.org/en-us/get-involved/how-to-help/" target="_blank" rel="noopener noreferrer">The Nature Conservancy - How to Help</a></li>
+      <li><a href="https://www.greenpeace.org/usa/get-involved/" target="_blank" rel="noopener noreferrer">Greenpeace - Get Involved</a></li>
+      <li><a href="https://www.wwf.org.uk/get-involved" target="_blank" rel="noopener noreferrer">World Wildlife Fund - Get Involved</a></li>
+      <li><a href="https://www.sierraclub.org/" target="_blank" rel="noopener noreferrer">Sierra Club - Join the Movement</a></li>
+    </ul>
+  </section>
+</main>
+<footer>
+  &copy; 2024 Save Nature Initiative - Together we thrive.
+</footer>
+
+<!-- Donate Modal -->
+<div id="donateModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="donateTitle" aria-describedby="donateDesc" tabindex="-1">
+  <div class="modal">
+    <h3 id="donateTitle">Support Our Cause</h3>
+    <p id="donateDesc">Thank you for your interest in donating! Please visit our partner organizations to contribute to nature conservation.</p>
+    <p><a href="https://www.worldwildlife.org/donate" target="_blank" rel="noopener noreferrer" class="btn" style="background-color: var(--primary-color); margin-bottom: 1rem;">World Wildlife Fund</a></p>
+    <p><a href="https://www.conservation.org/donate" target="_blank" rel="noopener noreferrer" class="btn" style="background-color: var(--primary-color);">Conservation International</a></p>
+    <button class="close-btn" id="closeDonateBtn" aria-label="Close donation modal">Close</button>
+  </div>
+</div>
+
+<script>
+  // Interactive content toggling and dynamic tips
+
+  const learnMoreBtn = document.getElementById('learnMoreBtn');
+  const tipsBtn = document.getElementById('tipsBtn');
+  const donateBtn = document.getElementById('donateBtn');
+
+  const learnMoreSection = document.getElementById('learnMoreContent');
+  const tipsSection = document.getElementById('natureTips');
+  const tipsList = tipsSection.querySelector('ul');
+
+  const donateModal = document.getElementById('donateModal');
+  const closeDonateBtn = document.getElementById('closeDonateBtn');
+
+  // Tips array for dynamic content
+  const natureTipsArray = [
+    "Reduce, reuse, and recycle to lower waste production.",
+    "Plant native trees and flowers to support local wildlife.",
+    "Conserve water by fixing leaks and using water-efficient fixtures.",
+    "Choose sustainable products to reduce environmental impact.",
+    "Avoid single-use plastics and carry reusable bags and bottles.",
+    "Support and volunteer with environmental charities and cleanups.",
+    "Use energy-efficient appliances and switch off unused electronics.",
+    "Educate others about the importance of protecting nature.",
+    "Compost your organic waste to enrich soil and reduce landfill.",
+    "Walk, bike, or use public transport to reduce carbon emissions."
+  ];
+
+  // Functions to toggle visibility and aria attributes for accessibility
+  function toggleSection(section, toggleButton) {
+    const isActive = section.classList.contains('active');
+    if(isActive) {
+      section.classList.remove('active');
+      section.setAttribute('aria-hidden', 'true');
+      toggleButton.setAttribute('aria-expanded', 'false');
+      // Move focus back to button after hiding
+      toggleButton.focus();
+    } else {
+      section.classList.add('active');
+      section.setAttribute('aria-hidden', 'false');
+      toggleButton.setAttribute('aria-expanded', 'true');
+      section.focus();
+    }
+  }
+
+  learnMoreBtn.addEventListener('click', () => {
+    // Hide tips if open
+    if (tipsSection.classList.contains('active')) {
+      toggleSection(tipsSection, tipsBtn);
+    }
+    toggleSection(learnMoreSection, learnMoreBtn);
+  });
+
+  tipsBtn.addEventListener('click', () => {
+    if (learnMoreSection.classList.contains('active')) {
+      toggleSection(learnMoreSection, learnMoreBtn);
+    }
+
+    if (tipsSection.classList.contains('active')) {
+      toggleSection(tipsSection, tipsBtn);
+    } else {
+      // Populate tips dynamically if empty
+      if (tipsList.children.length === 0) {
+        natureTipsArray.forEach(tip => {
+          const li = document.createElement('li');
+          li.textContent = tip;
+          tipsList.appendChild(li);
+        });
+      }
+      toggleSection(tipsSection, tipsBtn);
+    }
+  });
+
+  donateBtn.addEventListener('click', () => {
+    donateModal.classList.add('active');
+    donateModal.setAttribute('tabindex', '-1');
+    donateModal.focus();
+  });
+
+  closeDonateBtn.addEventListener('click', () => {
+    donateModal.classList.remove('active');
+    donateBtn.focus();
+  });
+
+  // Close the modal by clicking outside or pressing ESC key
+  donateModal.addEventListener('click', (e) => {
+    if (e.target === donateModal) {
+      donateModal.classList.remove('active');
+      donateBtn.focus();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && donateModal.classList.contains('active')) {
+      donateModal.classList.remove('active');
+      donateBtn.focus();
+    }
+  });
+
+  // Nature quiz implementation
+  const quizContainer = document.getElementById('quizContainer');
+  const quizQuestions = [
+    {
+      question: "Which gas do trees absorb to help reduce global warming?",
+      options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"],
+      answer: 1
+    },
+    {
+      question: "What is the main cause of ocean pollution?",
+      options: ["Plastic waste", "Salt", "Sunlight", "Fish farming"],
+      answer: 0
+    },
+    {
+      question: "Which energy source is considered renewable?",
+      options: ["Coal", "Solar", "Natural Gas", "Oil"],
+      answer: 1
+    },
+    {
+      question: "Which animal is a critical pollinator for many plants?",
+      options: ["Bees", "Wolves", "Deer", "Owls"],
+      answer: 0
+    },
+    {
+      question: "What does ‘biodiversity’ refer to?",
+      options: ["Variety of life forms", "Types of pollution", "Climate zones", "Trees only"],
+      answer: 0
+    }
+  ];
+
+  let currentQuestionIndex = 0;
+
+  function loadQuizQuestion() {
+    const q = quizQuestions[currentQuestionIndex];
+    quizContainer.innerHTML = '';
+
+    const questionEl = document.createElement('div');
+    questionEl.className = 'quiz-question';
+    questionEl.textContent = q.question;
+    quizContainer.appendChild(questionEl);
+
+    const optionsDiv = document.createElement('div');
+    optionsDiv.className = 'quiz-options';
+
+    q.options.forEach((option, i) => {
+      const btn = document.createElement('button');
+      btn.type = "button";
+      btn.textContent = option;
+      btn.setAttribute('aria-pressed', 'false');
+      btn.addEventListener('click', () => checkAnswer(i, btn));
+      optionsDiv.appendChild(btn);
+    });
+
+    quizContainer.appendChild(optionsDiv);
+
+    // Feedback placeholder
+    const feedback = document.createElement('div');
+    feedback.className = 'quiz-feedback';
+    feedback.setAttribute('aria-live', 'polite');
+    quizContainer.appendChild(feedback);
+  }
+
+  function checkAnswer(selected, btn) {
+    const q = quizQuestions[currentQuestionIndex];
+    const optionsBtns = quizContainer.querySelectorAll('.quiz-options button');
+    const feedback = quizContainer.querySelector('.quiz-feedback');
+
+    optionsBtns.forEach(button => {
+      button.disabled = true;
+      button.setAttribute('aria-pressed', 'false');
+      button.classList.remove('correct', 'incorrect');
+    });
+
+    if (selected === q.answer) {
+      btn.classList.add('correct');
+      btn.setAttribute('aria-pressed', 'true');
+      feedback.textContent = 'Correct! Great job!';
+    } else {
+      btn.classList.add('incorrect');
+      btn.setAttribute('aria-pressed', 'true');
+      feedback.textContent = `Oops! The correct answer is "${q.options[q.answer]}".`;
+      optionsBtns[q.answer].classList.add('correct');
+    }
+
+    // Show next question button or restart
+    setTimeout(() => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizQuestions.length) {
+        loadQuizQuestion();
+      } else {
+        quizContainer.innerHTML = "<p>Quiz complete! Thanks for participating. Refresh the page to try again.</p>";
+      }
+    }, 2500);
+  }
+
+  // Load initial quiz question
+  loadQuizQuestion();
+
+  // Image Gallery Implementation
+  const galleryImages = [
+    {
+      src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+      alt: 'Lush green forest with sun rays'
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80',
+      alt: 'Clear blue ocean with dramatic clouds'
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=800&q=80',
+      alt: 'Mountains with pine trees and fog'
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80',
+      alt: 'Colorful flowers in a meadow'
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1438786657491-936a9f3d77b6?auto=format&fit=crop&w=800&q=80',
+      alt: 'Scenic river flowing through a forest'
+    }
+  ];
+
+  let currentImageIndex = 0;
+  const galleryImgEl = document.getElementById('gallery-img');
+  const prevImgBtn = document.getElementById('prevImgBtn');
+  const nextImgBtn = document.getElementById('nextImgBtn');
+
+  function updateGalleryImage() {
+    const imgData = galleryImages[currentImageIndex];
+    galleryImgEl.src = imgData.src;
+    galleryImgEl.alt = imgData.alt;
+  }
+
+  prevImgBtn.addEventListener('click', () => {
+    currentImageIndex = (currentImageIndex -1 + galleryImages.length) % galleryImages.length;
+    updateGalleryImage();
+  });
+
+  nextImgBtn.addEventListener('click', () => {
+    currentImageIndex = (currentImageIndex +1) % galleryImages.length;
+    updateGalleryImage();
+  });
+
+  // Initialize gallery image
+  updateGalleryImage();
+
+</script>
+</body>
+</html>
+
